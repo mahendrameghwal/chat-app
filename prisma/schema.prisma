@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+}
+
+model User {
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  memberships ChatMember[]
+
+  @@map("users")
+}
+
+model Chat {
+  id                  String       @id @default(uuid())
+  type                ChatType     @default(DIRECT)
+  directKey           String?      @unique // Unique sorted pair key (e.g. "uuidA:uuidB") preventing duplicate direct chats
+  lastMessageText     String?
+  lastMessageAt       DateTime?
+  lastMessageSenderId String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  members             ChatMember[]
+
+  @@index([lastMessageAt(sort: Desc)])
+  @@map("chats")
+}
+
+model ChatMember {
+  id       String   @id @default(uuid())
+  chatId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([chatId, userId])
+  @@index([userId])
+  @@index([chatId])
+  @@map("chat_members")
+}

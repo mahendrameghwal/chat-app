@@ -1,0 +1,26 @@
+# Node dependencies
+node_modules/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Agents toolkit
+.agents/
+
+# Firebase credentials
+firebase-service-account.json
+*-adminsdk-*.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
